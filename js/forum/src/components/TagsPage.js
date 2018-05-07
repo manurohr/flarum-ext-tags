@@ -12,7 +12,7 @@ export default class TagsPage extends Component {
     this.tags = sortTags(app.store.all('tags').filter(tag => !tag.parent()));
 
     app.current = this;
-    app.history.push('tags', icon('fa fa-th-large'));
+    app.history.push('tags', icon('th-large'));
     app.drawer.hide();
     app.modal.close();
   }
@@ -34,16 +34,17 @@ export default class TagsPage extends Component {
               {pinned.map(tag => {
                 const lastDiscussion = tag.lastDiscussion();
                 const children = sortTags(app.store.all('tags').filter(child => child.parent() === tag));
-
                 return (
-                  <li className={'TagTile ' + (tag.color() ? 'colored' : '')}
+                  <li className={'TagTile ' + tag.slug() + ' ' +(tag.color() ? 'colored' : '')}
                     style={{backgroundColor: tag.color()}}>
                     <a className="TagTile-info" href={app.route.tag(tag)} config={m.route}>
                       <h3 className="TagTile-name">{tag.name()}</h3>
                       <p className="TagTile-description">{tag.description()}</p>
-                      {children
+                    </a>
+                      {children.length
                         ? (
                           <div className="TagTile-children">
+                          <div>Unterkategorien</div>
                             {children.map(child => [
                               <a href={app.route.tag(child)} config={function(element, isInitialized) {
                                 if (isInitialized) return;
@@ -56,17 +57,16 @@ export default class TagsPage extends Component {
                             ])}
                           </div>
                         ) : ''}
-                    </a>
                     {lastDiscussion
                       ? (
                         <a className="TagTile-lastDiscussion"
                           href={app.route.discussion(lastDiscussion, lastDiscussion.lastPostNumber())}
                           config={m.route}>
+                          <span className="TagTile-lastDiscussion-helper">Letze Diskussion {humanTime(lastDiscussion.lastTime())}</span>
                           <span className="TagTile-lastDiscussion-title">{lastDiscussion.title()}</span>
-                          {humanTime(lastDiscussion.lastTime())}
                         </a>
                       ) : (
-                        <span className="TagTile-lastDiscussion"/>
+                        <span className="TagTile-lastDiscussion">Noch keine Diskussion vorhanden</span>
                       )}
                   </li>
                 );

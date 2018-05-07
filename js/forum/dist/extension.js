@@ -105,7 +105,7 @@ System.register('flarum/tags/addTagControl', ['flarum/extend', 'flarum/utils/Dis
       if (discussion.canTag()) {
         items.add('tags', Button.component({
           children: app.translator.trans('flarum-tags.forum.discussion_controls.edit_tags_button'),
-          icon: 'tag',
+          icon: 'fa fa-tag',
           onclick: function onclick() {
             return app.modal.show(new TagDiscussionModal({ discussion: discussion }));
           }
@@ -155,6 +155,14 @@ System.register('flarum/tags/addTagFilter', ['flarum/extend', 'flarum/components
 
       if (tag) {
         vdom.attrs.className += ' IndexPage--tag' + tag.id();
+      }
+    });
+
+    // If currently viewing a tag, add css class name using tag slug
+    extend(IndexPage.prototype, 'view', function (view) {
+      var tag = this.currentTag();
+      if (tag) {
+        this.bodyClass += ' ' + tag.slug();
       }
     });
 
@@ -237,6 +245,35 @@ System.register('flarum/tags/addTagLabels', ['flarum/extend', 'flarum/components
       }
     });
 
+    // add primary and secondary tags as classname on every discussion page
+    extend(DiscussionPage.prototype, 'view', function (vdom) {
+      if (this.discussion) {
+        var tags = sortTags(this.discussion.tags());
+
+        if (tags && tags.length) {
+          if (tags.length > 1) {
+            var second_slug = tags[1].slug();
+            var slug = tags[0].slug();
+            // create any unexisting attribute in order to refresh vdom. only in that way,
+            // css class can be included to app container.
+            vdom.attrs.test = 'test';
+            vdom.attrs.className += ' ' + slug + ' ' + second_slug;
+            this.bodyClass += ' ' + slug + ' ' + second_slug;
+          } else {
+            var _slug = tags[0].slug();
+
+            // create any unexisting attribute in order to refresh vdom. only in that way,
+            // css class can be included to app container.
+            vdom.attrs.test = 'test';
+            vdom.attrs.className += ' ' + _slug;
+            this.bodyClass += ' ' + _slug;
+          }
+        }
+      } else {
+        console.log('this.discussion was not defined');
+      }
+    });
+
     // Add a list of a discussion's tags to the discussion hero, displayed
     // before the title. Put the title on its own line.
     extend(DiscussionHero.prototype, 'items', function (items) {
@@ -277,7 +314,7 @@ System.register('flarum/tags/addTagList', ['flarum/extend', 'flarum/components/I
     // to the index page's sidebar.
     extend(IndexPage.prototype, 'navItems', function (items) {
       items.add('tags', LinkButton.component({
-        icon: 'th-large',
+        icon: 'fa fa-th-large',
         children: app.translator.trans('flarum-tags.forum.index.tags_link'),
         href: app.route('tags')
       }), -10);
@@ -364,7 +401,7 @@ System.register('flarum/tags/components/DiscussionTaggedPost', ['flarum/componen
         babelHelpers.createClass(DiscussionTaggedPost, [{
           key: 'icon',
           value: function icon() {
-            return 'tag';
+            return 'fa fa-tag';
           }
         }, {
           key: 'descriptionKey',
@@ -669,7 +706,7 @@ System.register('flarum/tags/components/TagDiscussionModal', ['flarum/components
                     type: 'submit',
                     className: 'Button Button--primary',
                     disabled: primaryCount < this.minPrimary || secondaryCount < this.minSecondary,
-                    icon: 'check',
+                    icon: 'fa fa-check',
                     children: app.translator.trans('flarum-tags.forum.choose_tags.submit_button')
                   })
                 )
@@ -1019,10 +1056,9 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                       var children = sortTags(app.store.all('tags').filter(function (child) {
                         return child.parent() === tag;
                       }));
-
                       return m(
                         'li',
-                        { className: 'TagTile ' + (tag.color() ? 'colored' : ''),
+                        { className: 'TagTile ' + tag.slug() + ' ' + (tag.color() ? 'colored' : ''),
                           style: { backgroundColor: tag.color() } },
                         m(
                           'a',
@@ -1036,25 +1072,30 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                             'p',
                             { className: 'TagTile-description' },
                             tag.description()
-                          ),
-                          children ? m(
-                            'div',
-                            { className: 'TagTile-children' },
-                            children.map(function (child) {
-                              return [m(
-                                'a',
-                                { href: app.route.tag(child), config: function config(element, isInitialized) {
-                                    if (isInitialized) return;
-                                    $(element).on('click', function (e) {
-                                      return e.stopPropagation();
-                                    });
-                                    m.route.apply(this, arguments);
-                                  } },
-                                child.name()
-                              ), ' '];
-                            })
-                          ) : ''
+                          )
                         ),
+                        children.length ? m(
+                          'div',
+                          { className: 'TagTile-children' },
+                          m(
+                            'div',
+                            null,
+                            'Unterkategorien'
+                          ),
+                          children.map(function (child) {
+                            return [m(
+                              'a',
+                              { href: app.route.tag(child), config: function config(element, isInitialized) {
+                                  if (isInitialized) return;
+                                  $(element).on('click', function (e) {
+                                    return e.stopPropagation();
+                                  });
+                                  m.route.apply(this, arguments);
+                                } },
+                              child.name()
+                            ), ' '];
+                          })
+                        ) : '',
                         lastDiscussion ? m(
                           'a',
                           { className: 'TagTile-lastDiscussion',
@@ -1062,11 +1103,20 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                             config: m.route },
                           m(
                             'span',
+                            { className: 'TagTile-lastDiscussion-helper' },
+                            'Letze Diskussion ',
+                            humanTime(lastDiscussion.lastTime())
+                          ),
+                          m(
+                            'span',
                             { className: 'TagTile-lastDiscussion-title' },
                             lastDiscussion.title()
-                          ),
-                          humanTime(lastDiscussion.lastTime())
-                        ) : m('span', { className: 'TagTile-lastDiscussion' })
+                          )
+                        ) : m(
+                          'span',
+                          { className: 'TagTile-lastDiscussion' },
+                          'Noch keine Diskussion vorhanden'
+                        )
                       );
                     })
                   ),
