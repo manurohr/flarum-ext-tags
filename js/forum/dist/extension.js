@@ -150,6 +150,14 @@ System.register('flarum/tags/addTagFilter', ['flarum/extend', 'flarum/components
       return original();
     });
 
+    // If currently viewing a tag, add css class name using tag slug
+    extend(IndexPage.prototype, 'view', function (view) {
+      var tag = this.currentTag();
+      if (tag) {
+        this.bodyClass += ' ' + tag.slug();
+      }
+    });
+
     // If currently viewing a tag, restyle the 'new discussion' button to use
     // the tag's color.
     extend(IndexPage.prototype, 'sidebarItems', function (items) {
@@ -208,6 +216,35 @@ System.register('flarum/tags/addTagLabels', ['flarum/extend', 'flarum/components
 
       if (tags && tags.length) {
         items.add('tags', tagsLabel(tags), 10);
+      }
+    });
+
+    // add primary and secondary tags as slugs to body classnames. 
+    extend(DiscussionPage.prototype, 'view', function (vdom) {
+      if (this.discussion) {
+        var tags = sortTags(this.discussion.tags());
+
+        if (tags && tags.length) {
+          if (tags.length > 1) {
+            var second_slug = tags[1].slug();
+            var slug = tags[0].slug();
+            // create any unexisting attribute in order to refresh vdom. only in that way,
+            // css class can be included to app container.
+            vdom.attrs.test = 'test';
+            vdom.attrs.className += ' ' + slug + ' ' + second_slug;
+            this.bodyClass += ' ' + slug + ' ' + second_slug;
+          } else {
+            var _slug = tags[0].slug();
+
+            // create any unexisting attribute in order to refresh vdom. only in that way,
+            // css class can be included to app container.
+            vdom.attrs.test = 'test';
+            vdom.attrs.className += ' ' + _slug;
+            this.bodyClass += ' ' + _slug;
+          }
+        }
+      } else {
+        console.log('this.discussion was not defined');
       }
     });
 
@@ -1013,10 +1050,9 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                       var children = sortTags(app.store.all('tags').filter(function (child) {
                         return child.parent() === tag;
                       }));
-
                       return m(
                         'li',
-                        { className: 'TagTile ' + (tag.color() ? 'colored' : ''),
+                        { className: 'TagTile ' + tag.slug() + ' ' + (tag.color() ? 'colored' : ''),
                           style: { backgroundColor: tag.color() } },
                         m(
                           'a',
@@ -1030,25 +1066,30 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                             'p',
                             { className: 'TagTile-description' },
                             tag.description()
-                          ),
-                          children ? m(
-                            'div',
-                            { className: 'TagTile-children' },
-                            children.map(function (child) {
-                              return [m(
-                                'a',
-                                { href: app.route.tag(child), config: function config(element, isInitialized) {
-                                    if (isInitialized) return;
-                                    $(element).on('click', function (e) {
-                                      return e.stopPropagation();
-                                    });
-                                    m.route.apply(this, arguments);
-                                  } },
-                                child.name()
-                              ), ' '];
-                            })
-                          ) : ''
+                          )
                         ),
+                        children.length ? m(
+                          'div',
+                          { className: 'TagTile-children' },
+                          m(
+                            'div',
+                            null,
+                            'Unterkategorien'
+                          ),
+                          children.map(function (child) {
+                            return [m(
+                              'a',
+                              { href: app.route.tag(child), config: function config(element, isInitialized) {
+                                  if (isInitialized) return;
+                                  $(element).on('click', function (e) {
+                                    return e.stopPropagation();
+                                  });
+                                  m.route.apply(this, arguments);
+                                } },
+                              child.name()
+                            ), ' '];
+                          })
+                        ) : '',
                         lastDiscussion ? m(
                           'a',
                           { className: 'TagTile-lastDiscussion',
@@ -1056,11 +1097,20 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                             config: m.route },
                           m(
                             'span',
+                            { className: 'TagTile-lastDiscussion-helper' },
+                            'Letze Diskussion ',
+                            humanTime(lastDiscussion.lastTime())
+                          ),
+                          m(
+                            'span',
                             { className: 'TagTile-lastDiscussion-title' },
                             lastDiscussion.title()
-                          ),
-                          humanTime(lastDiscussion.lastTime())
-                        ) : m('span', { className: 'TagTile-lastDiscussion' })
+                          )
+                        ) : m(
+                          'span',
+                          { className: 'TagTile-lastDiscussion' },
+                          'Noch keine Diskussion vorhanden'
+                        )
                       );
                     })
                   ),
