@@ -20,6 +20,14 @@ export default function() {
     return original();
   });
 
+  // If currently viewing a tag, add css class name using tag slug
+  extend(IndexPage.prototype, 'view', function(view) {
+    const tag = this.currentTag();
+    if (tag) {
+      this.bodyClass += ' ' + tag.slug();
+    }
+  });
+
   // If currently viewing a tag, restyle the 'new discussion' button to use
   // the tag's color.
   extend(IndexPage.prototype, 'sidebarItems', function(items) {

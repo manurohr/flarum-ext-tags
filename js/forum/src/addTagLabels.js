@@ -16,6 +16,36 @@ export default function() {
     }
   });
 
+    // add primary and secondary tags as slugs to body classnames. 
+    extend(DiscussionPage.prototype, 'view', function(vdom) {
+    if (this.discussion) {
+      const tags = sortTags(this.discussion.tags());
+
+      if (tags && tags.length) {
+        if (tags.length > 1) {
+          const second_slug = tags[1].slug();
+          const slug = tags[0].slug();
+          // create any unexisting attribute in order to refresh vdom. only in that way,
+          // css class can be included to app container.
+          vdom.attrs.test = 'test'; 
+          vdom.attrs.className += ' ' + slug + ' ' + second_slug;
+          this.bodyClass += ' ' + slug + ' ' + second_slug;
+        } else {
+          const slug = tags[0].slug();
+
+          // create any unexisting attribute in order to refresh vdom. only in that way,
+          // css class can be included to app container.
+          vdom.attrs.test = 'test'; 
+          vdom.attrs.className += ' ' + slug;
+          this.bodyClass += ' ' + slug;
+        }
+      }
+    } else {
+      console.log('this.discussion was not defined');
+    }
+  });
+
+
   // Include a discussion's tags when fetching it.
   extend(DiscussionPage.prototype, 'params', function(params) {
     params.include.push('tags');
