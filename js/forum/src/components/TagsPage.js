@@ -36,7 +36,7 @@ export default class TagsPage extends Component {
                 const children = sortTags(app.store.all('tags').filter(child => child.parent() === tag));
 
                 return (
-                  <li className={'TagTile ' + (tag.color() ? 'colored' : '')}
+                  <li className={'TagTile ' + tag.slug() + ' ' +(tag.color() ? 'colored' : '')}
                     style={{backgroundColor: tag.color()}}>
                     <a className="TagTile-info" href={app.route.tag(tag)} config={m.route}>
                       <h3 className="TagTile-name">{tag.name()}</h3>
@@ -62,11 +62,11 @@ export default class TagsPage extends Component {
                         <a className="TagTile-lastDiscussion"
                           href={app.route.discussion(lastDiscussion, lastDiscussion.lastPostNumber())}
                           config={m.route}>
+                          <span className="TagTile-lastDiscussion-helper">Letze Diskussion {humanTime(lastDiscussion.lastTime())}</span>
                           <span className="TagTile-lastDiscussion-title">{lastDiscussion.title()}</span>
-                          {humanTime(lastDiscussion.lastTime())}
                         </a>
                       ) : (
-                        <span className="TagTile-lastDiscussion"/>
+                        <span className="TagTile-lastDiscussion">Noch keine Diskussion vorhanden</span>
                       )}
                   </li>
                 );
