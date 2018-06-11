@@ -86,6 +86,40 @@ export default class TagsPage extends Component {
               </div>
             ) : ''}
           </div>
+          <div className="TagsPage-footer">
+            <div className="TagsPage-footer-links">
+                <nav>
+                  <ul>
+                    <li class="copyright">© 2018 Quickline</li>
+                    <li><a href="https://www.quickline.ch/agb/" target="_blank" title="AGB">AGB</a></li>
+                    <li><a href="https://www.quickline.ch/impressum/" target="_blank" title="Impressum">Impressum</a></li>
+                    <li><a href="https://www.quickline.ch/rechtliche-hinweise/" target="_blank" title="Rechtliche Hinweise">Rechtliche Hinweise</a></li>
+                    <li><a href="http://qlgroup.quickline.ch/mediacenter/pressemitteilungen/" target="_blank" title="Medien">Medien</a></li>
+                  </ul>
+                </nav>
+            </div>
+            <div className="TagsPage-footer-social">
+              <nav>
+                <ul>
+                  <li class="">
+                    <a class="nav-link" href="https://www.facebook.com/quickline?!%2Fquickline%3Fsk=wall" target="_blank" title="Facebook">
+                      <i class="fa fa-facebook fa-lg"></i>
+                    </a>
+                  </li>
+                  <li class="">
+                    <a class="nav-link" href="https://plus.google.com/110483154215435496087/posts" target="_blank" title="Google+">
+                      <i class="fa fa-google-plus fa-lg"></i>
+                    </a>
+                  </li>
+                  <li class="last">
+                    <a class="nav-link" href="http://www.youtube.com/user/QUICKLINEmultimedia" target="_blank" title="Youtube">
+                      <i class="fa fa-youtube-play fa-lg"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
         </div>
       </div>
     );

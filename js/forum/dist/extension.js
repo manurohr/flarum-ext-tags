@@ -225,23 +225,18 @@ System.register('flarum/tags/addTagLabels', ['flarum/extend', 'flarum/components
         var tags = sortTags(this.discussion.tags());
 
         if (tags && tags.length) {
-          if (tags.length > 1) {
-            var second_slug = tags[1].slug();
-            var slug = tags[0].slug();
-            // create any unexisting attribute in order to refresh vdom. only in that way,
-            // css class can be included to app container.
-            vdom.attrs.test = 'test';
-            vdom.attrs.className += ' ' + slug + ' ' + second_slug;
-            this.bodyClass += ' ' + slug + ' ' + second_slug;
-          } else {
-            var _slug = tags[0].slug();
-
-            // create any unexisting attribute in order to refresh vdom. only in that way,
-            // css class can be included to app container.
-            vdom.attrs.test = 'test';
-            vdom.attrs.className += ' ' + _slug;
-            this.bodyClass += ' ' + _slug;
-          }
+          var slug_array = [];
+          var slug_item = void 0;
+          tags.forEach(function (item, index, array) {
+            slug_item = tags[index].slug();
+            slug_array.push(slug_item);
+          });
+          var slugs_string = slug_array.join(' ');
+          // create any unexisting attribute in order to refresh vdom. only in that way,
+          // css class can be included to app container.
+          vdom.attrs.test = 'test';
+          vdom.attrs.className += ' ' + slugs_string;
+          this.bodyClass += ' ' + slugs_string;
         }
       } else {
         console.log('this.discussion was not defined');
@@ -1123,6 +1118,102 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                       return [tagLabel(tag, { link: true }), ' '];
                     })
                   ) : ''
+                ),
+                m(
+                  'div',
+                  { className: 'TagsPage-footer' },
+                  m(
+                    'div',
+                    { className: 'TagsPage-footer-links' },
+                    m(
+                      'nav',
+                      null,
+                      m(
+                        'ul',
+                        null,
+                        m(
+                          'li',
+                          { 'class': 'copyright' },
+                          '\xA9 2018 Quickline'
+                        ),
+                        m(
+                          'li',
+                          null,
+                          m(
+                            'a',
+                            { href: 'https://www.quickline.ch/agb/', target: '_blank', title: 'AGB' },
+                            'AGB'
+                          )
+                        ),
+                        m(
+                          'li',
+                          null,
+                          m(
+                            'a',
+                            { href: 'https://www.quickline.ch/impressum/', target: '_blank', title: 'Impressum' },
+                            'Impressum'
+                          )
+                        ),
+                        m(
+                          'li',
+                          null,
+                          m(
+                            'a',
+                            { href: 'https://www.quickline.ch/rechtliche-hinweise/', target: '_blank', title: 'Rechtliche Hinweise' },
+                            'Rechtliche Hinweise'
+                          )
+                        ),
+                        m(
+                          'li',
+                          null,
+                          m(
+                            'a',
+                            { href: 'http://qlgroup.quickline.ch/mediacenter/pressemitteilungen/', target: '_blank', title: 'Medien' },
+                            'Medien'
+                          )
+                        )
+                      )
+                    )
+                  ),
+                  m(
+                    'div',
+                    { className: 'TagsPage-footer-social' },
+                    m(
+                      'nav',
+                      null,
+                      m(
+                        'ul',
+                        null,
+                        m(
+                          'li',
+                          { 'class': '' },
+                          m(
+                            'a',
+                            { 'class': 'nav-link', href: 'https://www.facebook.com/quickline?!%2Fquickline%3Fsk=wall', target: '_blank', title: 'Facebook' },
+                            m('i', { 'class': 'fa fa-facebook fa-lg' })
+                          )
+                        ),
+                        m(
+                          'li',
+                          { 'class': '' },
+                          m(
+                            'a',
+                            { 'class': 'nav-link', href: 'https://plus.google.com/110483154215435496087/posts', target: '_blank', title: 'Google+' },
+                            m('i', { 'class': 'fa fa-google-plus fa-lg' })
+                          )
+                        ),
+                        m(
+                          'li',
+                          { 'class': 'last' },
+                          m(
+                            'a',
+                            { 'class': 'nav-link', href: 'http://www.youtube.com/user/QUICKLINEmultimedia', target: '_blank', title: 'Youtube' },
+                            m('i', { 'class': 'fa fa-youtube-play fa-lg' })
+                          )
+                        )
+                      )
+                    )
+                  )
                 )
               )
             );
