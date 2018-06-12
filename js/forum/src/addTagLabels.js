@@ -22,23 +22,18 @@ export default function() {
       const tags = sortTags(this.discussion.tags());
 
       if (tags && tags.length) {
-        if (tags.length > 1) {
-          const second_slug = tags[1].slug();
-          const slug = tags[0].slug();
+        let slug_array = [];
+        let slug_item;
+        tags.forEach(function(item,index,array) {
+            slug_item = tags[index].slug();
+            slug_array.push(slug_item);
+        })
+        let slugs_string = slug_array.join(' ');
           // create any unexisting attribute in order to refresh vdom. only in that way,
           // css class can be included to app container.
-          vdom.attrs.test = 'test'; 
-          vdom.attrs.className += ' ' + slug + ' ' + second_slug;
-          this.bodyClass += ' ' + slug + ' ' + second_slug;
-        } else {
-          const slug = tags[0].slug();
-
-          // create any unexisting attribute in order to refresh vdom. only in that way,
-          // css class can be included to app container.
-          vdom.attrs.test = 'test'; 
-          vdom.attrs.className += ' ' + slug;
-          this.bodyClass += ' ' + slug;
-        }
+        vdom.attrs.test = 'test'; 
+        vdom.attrs.className += ' ' + slugs_string;
+        this.bodyClass += ' ' + slugs_string;
       }
     } else {
       console.log('this.discussion was not defined');
