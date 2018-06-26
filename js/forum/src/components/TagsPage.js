@@ -91,7 +91,7 @@ export default class TagsPage extends Component {
                 <nav>
                   <ul>
                     <li class="copyright">© 2018 Quickline</li>
-                    <li><a href="https://www.quickline.ch/agb/" target="_blank" title="AGB">AGB</a></li>
+                    <li><a href="/p/2-community-nutzungsbedingungen" target="_blank" title="nutzungsbedingungen">Community Nutzungsbedingungen</a></li>
                     <li><a href="https://www.quickline.ch/impressum/" target="_blank" title="Impressum">Impressum</a></li>
                     <li><a href="https://www.quickline.ch/rechtliche-hinweise/" target="_blank" title="Rechtliche Hinweise">Rechtliche Hinweise</a></li>
                     <li><a href="http://qlgroup.quickline.ch/mediacenter/pressemitteilungen/" target="_blank" title="Medien">Medien</a></li>

@@ -1141,8 +1141,8 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                           null,
                           m(
                             'a',
-                            { href: 'https://www.quickline.ch/agb/', target: '_blank', title: 'AGB' },
-                            'AGB'
+                            { href: '/p/2-community-nutzungsbedingungen', target: '_blank', title: 'nutzungsbedingungen' },
+                            'Community Nutzungsbedingungen'
                           )
                         ),
                         m(
