@@ -1093,7 +1093,7 @@ System.register('flarum/tags/components/TagsPage', ['flarum/Component', 'flarum/
                           m(
                             'span',
                             { className: 'TagTile-lastDiscussion-helper' },
-                            'Letze Diskussion ',
+                            'Letzte Diskussion ',
                             humanTime(lastDiscussion.lastTime())
                           ),
                           m(
